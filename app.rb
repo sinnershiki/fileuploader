@@ -2,15 +2,16 @@
 require 'sinatra'
 
 get '/' do
-  list = Dir.glob("./files/*.*").map{|f| f.split('/').last}
-
+  @list = Dir.glob("./files/*").map{|f| f.split('/').last}
+  #puts @list
   haml :index
 
 end
 
+
 post '/upload' do
   if params[:file]
-    save_path = "./public/#{params[:file][:filename]}"
+    save_path = "./files/#{params[:file][:filename]}"
     File.open(save_path, 'wb') do |f|
       p params[:file][:tempfile]
       f.write params[:file][:tempfile].read
