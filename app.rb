@@ -3,17 +3,21 @@ require 'sinatra'
 
 get '/' do
   @list = Dir.glob("./files/*").map{|f| f.split('/').last}
-  #puts @list
   haml :index
-
 end
 
 post '/upload' do
   if params[:file]
-    save_path = "./files/#{params[:file][:filename]}"
-    File.open(save_path, 'wb') do |f|
-      p params[:file][:tempfile]
-      f.write params[:file][:tempfile].read
+    p save_path = "./files/#{params[:file][:filename]}"
+    p @list = Dir.glob("./files/*")
+    if File.exist?(save_path) then
+      p @message = "File is exist!"
+    else
+      File.open(save_path, 'wb') do |f|
+        p params[:file][:tempfile]
+        f.write params[:file][:tempfile].read
+      end
+      p @message = "File upload success"
     end
   end
 #  haml :upload
