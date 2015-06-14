@@ -8,20 +8,23 @@ get '/' do
 
 end
 
-
 post '/upload' do
   if params[:file]
     save_path = "./files/#{params[:file][:filename]}"
     File.open(save_path, 'wb') do |f|
       p params[:file][:tempfile]
       f.write params[:file][:tempfile].read
-      @mes = "アップロード成功"
     end
   end
-  haml :upload
+#  haml :upload
   redirect '/'
 end
 
 get '/download/:filename' do |filename|
   send_file "./files/#{filename}", :filename => filename, :type => 'Application/octet-stream'
+end
+
+get '/delete/:filename' do |filename|
+  File.delete("./files/#{filename}")
+  redirect '/'
 end
