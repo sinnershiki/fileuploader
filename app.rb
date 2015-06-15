@@ -8,15 +8,19 @@ end
 
 post '/upload' do
   if params[:file]
-    p save_path = "./files/#{params[:file][:filename]}"
-    p @list = Dir.glob("./files/*")
-    if File.exist?(save_path) then
+    filename = params[:file][:filename].split(".").first
+    extension = params[:file][:filename].split(".").last
+    p save_path = "./files/#{filename}.#{extension}"
+    @list = Dir.glob("./files/*")
+    index = 1
+    while File.exist?(save_path) do
       p @message = "File is exist!"
-    else
-      File.open(save_path, 'wb') do |f|
-        p params[:file][:tempfile]
-        f.write params[:file][:tempfile].read
-      end
+      p save_path = "./files/#{filename}(#{index}).#{extension}"
+      index += 1
+    end
+    File.open(save_path, 'wb') do |f|
+      #p params[:file][:tempfile]
+      f.write params[:file][:tempfile].read
       p @message = "File upload success"
     end
   end
