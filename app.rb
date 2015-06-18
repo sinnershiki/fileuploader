@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'sinatra'
-
-user_path = "/home/sugano/files"
+#user_path = "/home/sugano/files"
+user_path = "./files"
 
 get '/' do
   @list = Dir.glob("#{user_path}/*").map{|f| f.split('/').last}
@@ -9,6 +9,7 @@ get '/' do
 end
 
 post '/upload' do
+  p "upload"
   if params[:file]
     filename = params[:file][:filename].split(".").first
     extension = params[:file][:filename].split(".").last
