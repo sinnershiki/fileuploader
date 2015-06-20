@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 require 'sinatra'
+require 'omniauth-slack'
 #user_path = "/home/sugano/files"
 user_path = "./files"
+
+configure do
+  enable :sessions
+  use OmniAuth::Builder do
+    provider :slack, ENV["SLACK_APP_ID"], ENV["SLACK_APP_SECRET"], scope: "client"
+  end
+end
 
 get '/' do
   @list = Dir.glob("#{user_path}/*").map{|f| f.split('/').last}
@@ -37,4 +45,31 @@ end
 get '/delete/:filename' do |filename|
   File.delete("#{user_path}/#{filename}")
   redirect '/'
+end
+
+get '/auth/slack/callback' do
+  p @auth = request.env['omniauth.auth']
+  p request.env["omniauth.params"]
+  p session[:uid] = request.env["omniauth.params"]["uid"]
+  redirect '/'
+end
+
+get '/login' do
+  #p ENV["SLACK_APP_ID"]
+  #p ENV["SLACK_APP_SECRET"]
+
+  # we do not want to redirect to twitter when the path info starts
+  # with /auth/
+  pass if request.path_info =~ /^\/auth\//
+
+  # /auth/twitter is captured by omniauth:
+  # when the path info matches /auth/twitter, omniauth will redirect to twitter
+  redirect to('/auth/slack') unless current_user
+end
+
+helpers do
+  # define a current_user method, so we can be sure if an user is authenticated
+  def current_user
+    !session[:uid].nil?
+  end
 end

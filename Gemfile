@@ -10,3 +10,5 @@ gem "haml"
 gem "coffee-script"
 gem "shotgun"
 gem "therubyracer"
+
+gem 'omniauth-slack'
