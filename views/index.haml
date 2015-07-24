@@ -8,6 +8,8 @@
   %body
     %h1 File Uploader
 
+    %p= @user.name
+
     %div{:id => "drop_zone", :ondrop => "onDrop(event)", :ondragover => "onDragOver(event)"}
       %p アップロードするファイルをドロップ
 
