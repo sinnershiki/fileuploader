@@ -7,19 +7,23 @@
 
   %body
     %h1 File Uploader
+    -if !@user.nil?
+      %div
+        welcome #{@user.name}
+        %a{:href => '/logout'} logout
 
-    %p= @user.name
+      %div{:id => "drop_zone", :ondrop => "onDrop(event)", :ondragover => "onDragOver(event)"}
+        %p アップロードするファイルをドロップ
+        %form{:id => "content", :action => "./upload", :method => "post", :enctype => "multipart/form-data"}
+          %input{:type => "file", :name => "file"}
+          %input{:type => "submit", :name => "submit"}
 
-    %div{:id => "drop_zone", :ondrop => "onDrop(event)", :ondragover => "onDragOver(event)"}
-      %p アップロードするファイルをドロップ
-
-      %form{:id => "content", :action => "./upload", :method => "post", :enctype => "multipart/form-data"}
-        %input{:type => "file", :name => "file"}
-        %input{:type => "submit", :name => "submit"}
-
-
-    - @list.each do |file|
-      %ul
-        %li
-          %a{:href => '/download/'+file}= file
-          %a{:href => '/delete/'+file} delete
+      -@list.each do |file|
+        %ul
+          %li
+            %a{:href => '/download/'+file}= file
+            %a{:href => '/delete/'+file} delete
+    -else
+      %div
+        please
+        %a{:href => '/login'} login

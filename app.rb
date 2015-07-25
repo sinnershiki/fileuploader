@@ -3,14 +3,11 @@ require 'sinatra'
 require 'omniauth-slack'
 require_relative 'models/user'
 Mongoid.load!('./mongoid.yml')
-#"/home/sugano/files"
-#"./files"
 file_path = ENV["FILE_PATH"]
-
 
 configure do
   enable :sessions
-  #set :session_secret, "ENV["SESSION_SECRET"]"
+  set :session_secret, ENV["SESSION_SECRET"]
   use OmniAuth::Builder do
     provider :slack, ENV["SLACK_APP_ID"], ENV["SLACK_APP_SECRET"], scope: "client", team: "coms"
   end
@@ -18,7 +15,7 @@ end
 
 get '/' do
   if session[:uid].nil? then
-    @user = "no user"
+    @user = nil
   else
     p @user = User.where(uid: session[:uid]).first
   end
@@ -84,20 +81,17 @@ get '/login' do
 
   # /auth/twitter is captured by omniauth:
   # when the path info matches /auth/twitter, omniauth will redirect to twitter
-  redirect '/auth/slack' unless current_user
-  redirect '/'
+  if current_user
+    redirect '/'
+  else
+    redirect '/auth/slack'
+  end
   #p session[:uid]
 end
 
 get '/logout' do
   session[:uid] = nil
   redirect '/'
-end
-
-before do
-  #特定IPからのAccessは受け付けるみたいにしたい．
-  #それ以外は，slackのアカウント持ってないとダメってしたい．
-  redirect '/login' unless current_user
 end
 
 helpers do
