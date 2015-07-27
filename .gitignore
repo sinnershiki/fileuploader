@@ -4,3 +4,4 @@
 \#*
 /files/*
 *.sh
+/public/files
