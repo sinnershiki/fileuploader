@@ -3,7 +3,8 @@ require 'sinatra'
 require 'omniauth-slack'
 require_relative 'models/user'
 Mongoid.load!('./mongoid.yml')
-file_path = ENV["FILE_PATH"]
+path = ENV["FILE_PATH"]
+files_path = ENV["FILE_PATH"]
 
 configure do
   enable :sessions
@@ -17,49 +18,61 @@ get '/' do
   if session[:uid].nil? then
     @user = nil
   else
-    p @user = User.where(uid: session[:uid]).first
+    @user = User.where(uid: session[:uid]).first
   end
-  @list = Dir.glob("#{file_path}/*").map{|f| f.split('/').last}
+  @dir = files_path
+  @list = Dir.glob("#{files_path}/*").map{|f| f.split('/').last}
   haml :index
 end
 
+get '/file/:username' do |username|
+  if session[:uid].nil? then
+    @user = nil
+  else
+    @user = User.where(uid: session[:uid]).first
+  end
+  @list = Dir.glob("#{files_path}/#{username}/*").map{|f| f.split('/').last}
+  haml :user
+end
+
 post '/upload' do
-  p "upload"
   if params[:file]
+    @user = User.where(uid: session[:uid]).first
     filename = params[:file][:filename].split(".").first
     extension = params[:file][:filename].split(".").last
-    p save_path = "#{file_path}/#{filename}.#{extension}"
-    @list = Dir.glob("#{file_path}/*")
+    p save_path = "#{files_path}/#{@user.name}/#{filename}.#{extension}"
+    @list = Dir.glob("#{files_path}/#{@user.name}/*")
     index = 1
     while File.exist?(save_path) do
       p @message = "File is exist!"
-      p save_path = "#{file_path}/#{filename}(#{index}).#{extension}"
+      p save_path = "#{files_path}/#{@user.name}/#{filename}(#{index}).#{extension}"
       index += 1
     end
     File.open(save_path, 'wb') do |f|
-      #p params[:file][:tempfile]
       f.write params[:file][:tempfile].read
       p @message = "File upload success"
     end
   end
-  redirect '/'
+  #redirect '/file/'+@user.name
 end
 
-get '/download/:filename' do |filename|
-  send_file "#{file_path}/#{filename}", :filename => filename, :type => 'Application/octet-stream'
+get '/download/:user/:filename' do |user, filename|
+  send_file "#{files_path}/#{user}/#{filename}", :filename => filename, :type => 'Application/octet-stream'
 end
 
-get '/delete/:filename' do |filename|
-  File.delete("#{file_path}/#{filename}")
-  redirect '/'
+get '/delete/:user/:filename' do |user,filename|
+  File.delete("#{files_path}/#{user}/#{filename}")
+  redirect '/file/'+user
 end
 
 get '/auth/slack/callback' do
   auth = request.env['omniauth.auth']
   credentials = request.env['omniauth.auth']['credentials']
   extra = request.env['omniauth.auth']['extra']
+  name = extra['raw_info']['user']
+  p files_path = "#{path}/#{name}"
+  FileUtils.mkdir_p(files_path) unless File.exist?(files_path)
   if User.where(uid: auth['uid']).exists? then
-    p "exist"
     session[:uid] = auth["uid"]
     redirect '/'
   else
@@ -71,22 +84,15 @@ get '/auth/slack/callback' do
       redirect '/login'
     end
   end
-  #redirect '/'
 end
 
 get '/login' do
-  # we do not want to redirect to twitter when the path info starts
-  # with /auth/
   pass if request.path_info =~ /^\/auth\//
-
-  # /auth/twitter is captured by omniauth:
-  # when the path info matches /auth/twitter, omniauth will redirect to twitter
   if current_user
     redirect '/'
   else
     redirect '/auth/slack'
   end
-  #p session[:uid]
 end
 
 get '/logout' do
@@ -95,7 +101,6 @@ get '/logout' do
 end
 
 helpers do
-  # define a current_user method, so we can be sure if an user is authenticated
   def current_user
     !session[:uid].nil?
   end

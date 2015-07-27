@@ -1,0 +1,12 @@
+!!!html5
+%html
+  %head
+    %script{:src => "/js/jquery-1.11.3.min.js"}
+    %script{:src => "/js/dragdrop.js"}
+    %link{:rel => "stylesheet", :type => "text/css", :href => "/css/style.css"}
+
+  %body
+    %h1 File Uploader
+    = yield
+
+    %a{:href => "/"} home
