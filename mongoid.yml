@@ -1,6 +1,6 @@
 development:
   sessions:
     default:
-      database: sinatora_test
+      database: coms_user
       hosts:
         - localhost:27017

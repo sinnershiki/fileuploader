@@ -1,13 +1,11 @@
 function onDrop(event){
     var file = event.dataTransfer.files[0];
     console.log(file)
-    //console.log(file.name)
-
     var fd = new FormData(content);
     fd.append("file", file)
 
     $.ajax({
-        url: './upload',
+        url: '/upload',
         type: 'POST',
         data: fd,
         processData: false,
@@ -17,7 +15,6 @@ function onDrop(event){
             window.location.reload();
         }
     });
-
     event.preventDefault();
 }
 function onDragOver(event){

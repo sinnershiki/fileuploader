@@ -10,10 +10,13 @@
       %input{:type => "file", :name => "file"}
       %input{:type => "submit", :name => "submit"}
 
-  -@list.each do |dir|
+  -@list.each do |file|
     %ul
       %li
-        %a{:href => '/file/'+dir}= dir
+        %a{:href => '/files/'+@user.name+'/'+file}= file
+        %a{:href => '/download/'+@user.name+'/'+file} DL
+        %a{:href => '/delete/'+@user.name+'/'+file} delete
+
 -else
   %div
     please
