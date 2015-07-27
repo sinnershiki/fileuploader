@@ -70,8 +70,8 @@ get '/auth/slack/callback' do
   credentials = request.env['omniauth.auth']['credentials']
   extra = request.env['omniauth.auth']['extra']
   name = extra['raw_info']['user']
-  p files_path = "#{path}/#{name}"
-  FileUtils.mkdir_p(files_path) unless File.exist?(files_path)
+  path = "#{file_path}/#{name}"
+  FileUtils.mkdir_p(path) unless File.exist?(path)
   if User.where(uid: auth['uid']).exists? then
     session[:uid] = auth["uid"]
     redirect '/'
@@ -102,6 +102,12 @@ end
 
 helpers do
   def current_user
-    !session[:uid].nil?
+    if session[:uid].nil? then
+      @user = nil
+    else
+      @user = User.where(uid: session[:uid]).first
+    end
+    #!session[:uid].nil?
+    !@user.nil?
   end
 end
