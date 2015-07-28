@@ -7,6 +7,24 @@
 
   %body
     %h1 File Uploader
-    = yield
 
-    %a{:href => "/"} home
+    -if !@user.nil?
+      %div
+        welcome #{@user.name}
+        %a{:href => '/logout'} logout
+
+      %div{:id => "drop_zone", :ondrop => "onDrop(event)", :ondragover => "onDragOver(event)"}
+        %p アップロードするファイルをドロップ
+        %form{:id => "content", :action => "/upload", :method => "post", :enctype => "multipart/form-data"}
+          %input{:type => "file", :name => "file"}
+          %input{:type => "submit", :name => "submit"}
+
+      = yield
+
+    -else
+      %div
+        please
+        %a{:href => '/login'} login
+
+    %div
+      %a{:href => "/"} home

@@ -3,7 +3,6 @@ require 'sinatra'
 require 'omniauth-slack'
 require_relative 'models/user'
 Mongoid.load!('./mongoid.yml')
-path = ENV["FILE_PATH"]
 files_path = ENV["FILE_PATH"]
 
 configure do
@@ -53,7 +52,8 @@ post '/upload' do
       p @message = "File upload success"
     end
   end
-  #redirect '/file/'+@user.name
+  p request.referrer
+  redirect request.referrer
 end
 
 get '/download/:user/:filename' do |user, filename|

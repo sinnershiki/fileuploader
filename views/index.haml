@@ -1,20 +1,6 @@
 !!!html5
--if !@user.nil?
-  %div
-    welcome #{@user.name}
-    %a{:href => '/logout'} logout
-
-  %div{:id => "drop_zone", :ondrop => "onDrop(event)", :ondragover => "onDragOver(event)"}
-    %p アップロードするファイルをドロップ
-    %form{:id => "content", :action => "/upload", :method => "post", :enctype => "multipart/form-data"}
-      %input{:type => "file", :name => "file"}
-      %input{:type => "submit", :name => "submit"}
-
+%div
   -@list.each do |dir|
     %ul
       %li
         %a{:href => '/file/'+dir}= dir
--else
-  %div
-    please
-    %a{:href => '/login'} login
