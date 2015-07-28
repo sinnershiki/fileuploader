@@ -30,6 +30,7 @@ get '/file/:username' do |username|
   else
     @user = User.where(uid: session[:uid]).first
   end
+  @user_path = username
   @list = Dir.glob("#{files_path}/#{username}/*").map{|f| f.split('/').last}
   haml :user
 end

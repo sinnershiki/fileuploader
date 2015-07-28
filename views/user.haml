@@ -3,6 +3,6 @@
   -@list.each do |file|
     %ul
       %li
-        %a{:href => '/files/'+@user.name+'/'+file}= file
-        %a{:href => '/download/'+@user.name+'/'+file} DL
-        %a{:href => '/delete/'+@user.name+'/'+file} delete
+        %a{:href => '/files/'+@user_path+'/'+file}= file
+        %a{:href => '/download/'+@user_path+'/'+file} DL
+        %a{:href => '/delete/'+@user_path+'/'+file} delete
