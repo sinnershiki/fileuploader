@@ -1,3 +1,7 @@
+body {
+    padding-top: 45px;
+}
+
 div#drop_zone {
     margin: 10px;
     padding: 20px;
