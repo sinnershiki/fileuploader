@@ -1,30 +1,50 @@
 !!!html5
 %html
   %head
-    %script{:src => "/js/jquery-1.11.3.min.js"}
-    %script{:src => "/js/dragdrop.js"}
+    %meta{:charaset => "utf-8"}
+    %meta{"http-equiv" => "X-UA-Compatible", :content => "IE=edge"}
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %link{:rel => "stylesheet", :type => "text/css", :href => "/css/bootstrap.min.css"}
     %link{:rel => "stylesheet", :type => "text/css", :href => "/css/style.css"}
+    %script{:src => "/js/jquery-1.11.3.min.js"}
+    %script{:src => "/js/bootstrap.min.js"}
+    %script{:src => "/js/dragdrop.js"}
 
   %body
-    %h1 File Uploader
+    %nav.navbar.navbar-inverse.navbar-fixed-top
+      %div.navbar-inner
+        %div.container
+          .navbar-header
+            %a.btn.btn-navbar{ "data-toggle" => "collapse", "data-target" => "nav-collapse" }
+              %span.sr-only Toggle navigation
+              %span.icon-bar
+              %span.icon-bar
+              %span.icon-bar
+            %a.brand{ "href" => "/" } File Uploader
 
-    -if !@user.nil?
-      %div
-        welcome #{@user.name}
-        %a{:href => '/logout'} logout
+          #navbar.nav-collapse.collapse
+            %ul.nav.navbar-nav
+              %li.active
+                %a{ "href" => "/" } Home
 
-      %div{:id => "drop_zone", :ondrop => "onDrop(event)", :ondragover => "onDragOver(event)"}
-        %p アップロードするファイルをドロップ
-        %form{:id => "content", :action => "/upload", :method => "post", :enctype => "multipart/form-data"}
-          %input{:type => "file", :name => "file"}
-          %input{:type => "submit", :name => "submit"}
+            %ul.nav.navbar-nav.navbar-right
+              %li.active
+                -if !@user.nil?
+                  %a{:href => '/logout'} logout
+                -else
+                  %a{:href => '/login'} login
 
-      = yield
 
-    -else
-      %div
-        please
-        %a{:href => '/login'} login
+    %div{:class => "container"}
+      -if !@user.nil?
+        %div{:id => "drop_zone", :ondrop => "onDrop(event)", :ondragover => "onDragOver(event)"}
+          %p アップロードするファイルをドロップ
+          %form{:id => "content", :action => "/upload", :method => "post", :enctype => "multipart/form-data"}
+            %input{:type => "file", :name => "file"}
+            %input{:type => "submit", :name => "submit"}
 
-    %div
-      %a{:href => "/"} home
+        = yield
+
+      -else
+        %div
+          %p Please Login
