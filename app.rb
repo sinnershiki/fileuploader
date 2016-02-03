@@ -9,7 +9,7 @@ configure do
   enable :sessions
   set :session_secret, ENV["SESSION_SECRET"]
   use OmniAuth::Builder do
-    provider :slack, ENV["SLACK_APP_ID"], ENV["SLACK_APP_SECRET"], scope: "client", team: "coms"
+    provider :slack, ENV["SLACK_APP_ID"], ENV["SLACK_APP_SECRET"], scope: "client", team: "COMS"
   end
 end
 
@@ -67,16 +67,19 @@ get '/delete/:user/:filename' do |user,filename|
 end
 
 get '/auth/slack/callback' do
-  auth = request.env['omniauth.auth']
+  puts auth = request.env['omniauth.auth']
   credentials = request.env['omniauth.auth']['credentials']
   extra = request.env['omniauth.auth']['extra']
   name = extra['raw_info']['user']
+  team = extra['raw_info']['team']
   path = "#{files_path}/#{name}"
-  FileUtils.mkdir_p(path) unless File.exist?(path)
-  if User.where(uid: auth['uid']).exists? then
+  if team != "COMS"
+    redirect '/'
+  elsif User.where(uid: auth['uid']).exists?
     session[:uid] = auth["uid"]
     redirect '/'
   else
+    FileUtils.mkdir_p(path) unless File.exist?(path)
     user = User.new(uid: auth['uid'], token: credentials['token'], name: extra['raw_info']['user'])
     if user.save!
       session[:uid] = auth["uid"]
